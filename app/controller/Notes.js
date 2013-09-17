@@ -97,7 +97,7 @@ Ext.define("NotesApp.controller.Notes", {
     onBackToHomeCommand: function () {
         console.log("onBackToHomeCommand");
         this.activateNotesList();
-    }
+    },
 
     //helpers
     getRandomInt: function (min, max) {
