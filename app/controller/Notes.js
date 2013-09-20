@@ -3,59 +3,76 @@ Ext.define("NotesApp.controller.Notes", {
     extend: "Ext.app.Controller",
     config: {
         refs: {
-            // We're going to lookup our views by xtype.
-            notesListContainer: "noteslistcontainer",
-            noteEditor: "noteeditor"
+            // We're going to lookup our views by alias.
+            notesListView: "noteslistview",
+            noteEditorView: "noteeditorview",
+            notesList: "#notesList"
         },
         control: {
-            notesListContainer: {
+            notesListView: {
                 // The commands fired by the notes list container.
                 newNoteCommand: "onNewNoteCommand",
                 editNoteCommand: "onEditNoteCommand"
             },
-            noteEditor: {
+            noteEditorView: {
                 // The commands fired by the note editor.
                 saveNoteCommand: "onSaveNoteCommand",
                 deleteNoteCommand: "onDeleteNoteCommand",
                 backToHomeCommand: "onBackToHomeCommand"
             }
+
         }
     },
-
+    // Transitions
     slideLeftTransition: { type: 'slide', direction: 'left' },
     slideRightTransition: { type: 'slide', direction: 'right' },
+
+    // Helper functions
+    getRandomInt: function (min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    },
+    activateNoteEditor: function (record) {
+
+        var noteEditorView = this.getNoteEditorView();
+        noteEditorView.setRecord(record); // load() is deprecated.
+        Ext.Viewport.animateActiveItem(noteEditorView, this.slideLeftTransition);
+    },
+    activateNotesList: function () {
+        Ext.Viewport.animateActiveItem(this.getNotesListView(), this.slideRightTransition);
+    },
 
     // Commands.
     onNewNoteCommand: function () {
 
-	    console.log("onNewNoteCommand");
+        console.log("onNewNoteCommand");
 
-	    var now = new Date();
-	    var noteId = (now.getTime()).toString() + (this.getRandomInt(0, 100)).toString();
+        var now = new Date();
+        var noteId = (now.getTime()).toString() + (this.getRandomInt(0, 100)).toString();
 
-	    var newNote = Ext.create("NotesApp.model.Note", {
-	        id: noteId,
-	        dateCreated: now,
-	        title: "",
-	        narrative: ""
-	    });
+        var newNote = Ext.create("NotesApp.model.Note", {
+            id: noteId,
+            dateCreated: now,
+            title: "",
+            narrative: ""
+        });
 
-	    this.activateNoteEditor(newNote);
-	},
+        this.activateNoteEditor(newNote);
+
+    },
     onEditNoteCommand: function (list, record) {
 
         console.log("onEditNoteCommand");
-        this.activateNoteEditor(record);
 
+        this.activateNoteEditor(record);
     },
     onSaveNoteCommand: function () {
 
         console.log("onSaveNoteCommand");
 
-        var noteEditor = this.getNoteEditor();
+        var noteEditorView = this.getNoteEditorView();
 
-        var currentNote = noteEditor.getRecord();
-        var newValues = noteEditor.getValues();
+        var currentNote = noteEditorView.getRecord();
+        var newValues = noteEditorView.getValues();
 
         // Update the current note's fields with form values.
         currentNote.set("title", newValues.title);
@@ -85,8 +102,8 @@ Ext.define("NotesApp.controller.Notes", {
 
         console.log("onDeleteNoteCommand");
 
-        var noteEditor = this.getNoteEditor();
-        var currentNote = noteEditor.getRecord();
+        var noteEditorView = this.getNoteEditorView();
+        var currentNote = noteEditorView.getRecord();
         var notesStore = Ext.getStore("Notes");
 
         notesStore.remove(currentNote);
@@ -95,28 +112,16 @@ Ext.define("NotesApp.controller.Notes", {
         this.activateNotesList();
     },
     onBackToHomeCommand: function () {
+
         console.log("onBackToHomeCommand");
         this.activateNotesList();
-    },
-
-    //helpers
-    getRandomInt: function (min, max) {
-	    return Math.floor(Math.random() * (max - min + 1)) + min;
-	},
-    activateNoteEditor: function (record) {
-
-        var noteEditor = this.getNoteEditor();
-        noteEditor.setRecord(record); // load() is deprecated.
-        Ext.Viewport.animateActiveItem(noteEditor, this.slideLeftTransition);
-    },
-    activateNotesList: function () {
-        Ext.Viewport.animateActiveItem(this.getNotesListContainer(), this.slideRightTransition);
     },
 
     // Base Class functions.
     launch: function () {
         this.callParent(arguments);
-        Ext.getStore("Notes").load();
+        var notesStore = Ext.getStore("Notes");
+        notesStore.load();
         console.log("launch");
     },
     init: function () {
