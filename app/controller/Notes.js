@@ -6,21 +6,28 @@ Ext.define("NotesApp.controller.Notes", {
             // We're going to lookup our views by alias.
             notesListView: "noteslistview",
             noteEditorView: "noteeditorview",
-            notesList: "#notesList"
+            notesList: "noteslistview #notesList",
+            newBtn: 'noteslistview button[itemId=newButton]',
+            backBtn: 'noteeditorview button[itemId=backButton]',
+            saveBtn: 'noteeditorview button[itemId=saveButton]',
+            deleteBtn: 'noteeditorview button[itemId=deleteButton]'
         },
         control: {
-            notesListView: {
-                // The commands fired by the notes list container.
-                newNoteCommand: "onNewNoteCommand",
-                editNoteCommand: "onEditNoteCommand"
+            notesList: {
+                disclose: "onEditNoteCommand"
             },
-            noteEditorView: {
-                // The commands fired by the note editor.
-                saveNoteCommand: "onSaveNoteCommand",
-                deleteNoteCommand: "onDeleteNoteCommand",
-                backToHomeCommand: "onBackToHomeCommand"
+            newBtn: {
+                tap: "onNewNoteCommand"
+            },
+            backBtn: {
+                tap: "onBackToHomeCommand"
+            },
+            saveBtn: {
+                tap: "onSaveNoteCommand"
+            },
+            deleteBtn: {
+                tap: "onDeleteNoteCommand"
             }
-
         }
     },
     // Transitions
@@ -59,7 +66,7 @@ Ext.define("NotesApp.controller.Notes", {
         this.activateNoteEditor(newNote);
 
     },
-    onEditNoteCommand: function (list, record) {
+    onEditNoteCommand: function (list, record, target, index, evt, options) {
 
         console.log("onEditNoteCommand");
 

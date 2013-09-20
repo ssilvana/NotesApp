@@ -52,23 +52,6 @@ Ext.define("NotesApp.view.NoteEditor", {
                     }
                 ]
             }
-        ],
-        listeners: [
-            {
-                delegate: "#backButton",
-                event: "tap",
-                fn: "onBackButtonTap"
-            },
-            {
-                delegate: "#saveButton",
-                event: "tap",
-                fn: "onSaveButtonTap"
-            },
-            {
-                delegate: "#deleteButton",
-                event: "tap",
-                fn: "onDeleteButtonTap"
-            }
         ]
     },
     onSaveButtonTap: function () {
